@@ -1,40 +1,45 @@
 /**
  * Main application file
  */
+'use strict';
 
-var express = require('express');
-var morgan = require('morgan');
-var app = express();
-var config = require('./config');
-var bodyParser = require('body-parser')
+let express = require('express');
+let morgan = require('morgan');
+let app = express();
+let config = require('./config');
+let bodyParser = require('body-parser');
 
 // use morgan to log request to the console
 app.use(morgan('dev'));
 
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
-// parse application/json
-app.use(bodyParser.json())
+// add body parsers
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
 
-var controller = require('./controllers/api'); // API controller
-var routes = express.Router();
+// set routes
+let controller = require('./controllers/api'); // API controller
+let routes = express.Router(); // eslint-disable-line new-cap
+routes.route('/').get(controller.api.getTickets);
+routes.route('/').post(controller.api.postTicket);
 
-routes.route('/tickets').get(controller.api.getTickets);
-routes.route('/tickets').post(controller.api.postTicket);
-routes.route('/tickets/:id').get(controller.api.getTicket);
-routes.route('/tickets/:id').patch(controller.api.patchTicket);
-
-/* add your routes here
-
-*/
+/**
+ * The following routes would be more standard but as viewing
+ * a ticket modifies the state I don't believe it should use GET
+ * It may leads to issues of tickets being clsed if the API was
+ * crawled from an external service
+ * routes.route('/:id').get(controller.api.getTicket);
+ * routes.route('/:id').patch(controller.api.patchTicket);
+ */
+routes.route('/:id').patch(controller.api.getTicket);
+routes.route('/:id/add').patch(controller.api.patchTicket);
 
 // initialize routes with the /api prefix
-app.use('/api', routes);
+app.use('/api/tickets', routes);
 
 // catch 404 status code
-app.get('*', function(req, res){
+app.get('*', function(req, res) {
   res.setHeader('Content-Type', 'application/json');
-  res.status(404).send(JSON.stringify({ message: 'Not Found' }, null, 2));
+  res.status(404).send(JSON.stringify({message: config.NOT_FOUND}, null, 2));
 });
 
 // development error handler
@@ -44,7 +49,7 @@ if (app.get('env') === 'development') {
     res.status(err.status || 500);
     res.render('error', {
       message: err.message,
-      error: err
+      error: err,
     });
   });
 }
@@ -55,11 +60,11 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error', {
     message: err.message,
-    error: {}
+    error: {},
   });
 });
 
 // start the server
 app.listen(config.port, function() {
-    console.log('Listening on port ' + config.port);
+    console.log(config.LISTENING + config.port);
 });
