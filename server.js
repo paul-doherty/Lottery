@@ -1,5 +1,6 @@
 /**
  * Main application file
+ * Application has been delinted using ESLint
  */
 'use strict';
 
@@ -33,13 +34,12 @@ routes.route('/').post(controller.api.postTicket);
 routes.route('/:id').patch(controller.api.getTicket);
 routes.route('/:id/add').patch(controller.api.patchTicket);
 
-// initialize routes with the /api prefix
-app.use('/api/tickets', routes);
+// initialize routes with the /api/tickets prefix
+app.use(config.ROUTE_PREFIX, routes);
 
 // catch 404 status code
 app.get('*', function(req, res) {
-  res.setHeader('Content-Type', 'application/json');
-  res.status(404).send(JSON.stringify({message: config.NOT_FOUND}, null, 2));
+  res.json(404, {mesage: config.NOT_FOUND});
 });
 
 // development error handler

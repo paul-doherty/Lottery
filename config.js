@@ -5,6 +5,7 @@ module.exports = {
     'lineMaximumValue': 2,
     'lineNumberOfValues': 3,
     'lineDefaultRows': 3,
+    'ROUTE_PREFIX': '/api/tickets',
     'LISTENING': 'Listening on port ',
     'NOT_FOUND': 'Not Found',
     'REGEX_VALID_TICKET': '^[0-9a-fA-F]{24}$',
