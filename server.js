@@ -11,7 +11,10 @@ let config = require('./config');
 let bodyParser = require('body-parser');
 
 // use morgan to log request to the console
-app.use(morgan('dev'));
+// do not use morgan for tests
+if (process.env.NODE_ENV !== 'test') {
+  app.use(morgan('dev'));
+}
 
 // add body parsers
 app.use(bodyParser.urlencoded({extended: false}));
@@ -47,7 +50,7 @@ app.get('*', function(req, res) {
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
-    res.render('error', {
+    res.json({
       message: err.message,
       error: err,
     });
@@ -58,10 +61,10 @@ if (app.get('env') === 'development') {
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
   res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {},
-  });
+  res.json({
+      message: err.message,
+      error: {},
+    });
 });
 
 // start the server

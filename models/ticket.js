@@ -39,18 +39,17 @@ ticketSchema.statics.createTicket = function createTicket(quantity) {
  * @param {number} quantity The number of lines to add to the ticket
  */
 ticketSchema.methods.addLines = function addLines(quantity) {
-    let additionalLines = [];
-    for(let i=0; i<quantity; i++) {
-        let currentLine = Line.createLine();
-        additionalLines.push(currentLine);
+    if(this.open) {
+        let additionalLines = [];
+        for(let i=0; i<quantity; i++) {
+            let currentLine = Line.createLine();
+            additionalLines.push(currentLine);
+        }
+        let current = (this.allLines)? this.allLines : [];
+        this.allLines = current.concat(additionalLines);
+        this.lineCount = this.allLines.length;
+        this.save();
     }
-    let current = (this.allLines)? this.allLines : [];
-    this.allLines = current.concat(additionalLines);
-    this.lineCount = this.allLines.length;
-    this.save(function(err) {
-        if (err) return handleError(err);
-        // thats it!
-    });
 };
 
 /**
@@ -58,11 +57,8 @@ ticketSchema.methods.addLines = function addLines(quantity) {
  */
 ticketSchema.methods.view = function view() {
     this.open = false;
-    this.save(function(err) {
-            if (err) return handleError(err);
-            // thats it!
-        });
-    console.log(config.INFO_TICKET_OPEN, this._id);
+    this.save();
+    // console.log(config.INFO_TICKET_OPEN, this._id);
 };
 
 module.exports = mongoose.model(config.MODEL_TICKET, ticketSchema);

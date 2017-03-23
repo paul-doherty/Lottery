@@ -7,6 +7,7 @@ let mongoose = require('mongoose');
 let config = require('../config');
 require('../models/ticket');
 
+mongoose.Promise = global.Promise;
 mongoose.connect(config.database);
 
 // Create models
@@ -22,7 +23,7 @@ exports.api = {};
  */
 exports.api.getTickets = function(req, res) {
     Ticket.find(null, {__v: 0, allLines: 0}).exec(function(error, data) {
-    res.json({tickets: data});
+    res.status(200).json({tickets: data});
     });
 };
 
@@ -35,9 +36,9 @@ exports.api.getTickets = function(req, res) {
 exports.api.postTicket = function(req, res) {
     if(isValidTicketQuantity(req)) {
         let ticket = Ticket.createTicket(req.body.quantity);
-        res.json({ticket: ticket});
+        res.status(201).json({ticket: ticket});
     } else {
-        res.json(400, {mesage: config.ERROR_INVALID_QUANTITY});
+        res.status(400).json({mesage: config.ERROR_INVALID_QUANTITY});
     }
 };
 
@@ -59,7 +60,7 @@ exports.api.getTicket = function(req, res) {
             res.json({ticket: ticketWithResults});
         });
     } else {
-        res.json(404, {mesage: config.ERROR_INVALID_TICKET_ID});
+        res.status(404).json({mesage: config.ERROR_INVALID_TICKET_ID});
     }
 };
 
@@ -71,10 +72,10 @@ exports.api.getTicket = function(req, res) {
  */
 exports.api.patchTicket = function(req, res) {
     if(!isValidTicketId(req)) {
-        res.json(404, {mesage: config.ERROR_INVALID_TICKET_ID});
+        res.status(404).json({mesage: config.ERROR_INVALID_TICKET_ID});
     }
     if(!isValidTicketQuantity(req)) {
-        res.json(400, {mesage: config.ERROR_INVALID_QUANTITY});
+        res.status(400).json({mesage: config.ERROR_INVALID_QUANTITY});
     }
 
     let ticketId = req.params.id;
@@ -85,9 +86,9 @@ exports.api.patchTicket = function(req, res) {
             ticket.addLines(quantity);
             let ticketObject = ticket.toObject();
             delete ticketObject.allLines; // hide alllines in output
-            res.json({ticket: ticketObject});
+            res.status(200).json({ticket: ticketObject});
         } else {
-            res.json(400, {mesage: config.ERROR_TICKET_CLOSED});
+            res.status(400).json({mesage: config.ERROR_TICKET_CLOSED});
         }
     });
 };
@@ -98,7 +99,6 @@ exports.api.patchTicket = function(req, res) {
  * @return {boolean} If the quantity specified is valid
  */
 function isValidTicketQuantity(req) {
-    console.log(typeof req.body.quantity);
     let isNumber = typeof req.body.quantity === 'number';
     return isNumber && req.body.quantity > 0;
 }
