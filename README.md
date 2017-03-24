@@ -8,13 +8,13 @@ Use 'npm test' to run unit tests
 
 Use 'npm start' to start the server
 
-Problem
+## Problem
 
 We are looking for a REST interface to a simple lottery system. The rules of the game are
 
 described below.
 
-Lottery Rules
+### Lottery Rules
 
 You have a series of lines on a ticket with 3 numbers, each of which has a value of 0, 1, or 2.
 
@@ -24,7 +24,7 @@ same, the result is 5. Otherwise so long as both 2nd and 3rd numbers are differe
 
 1st, the result is 1. Otherwise the result is 0.
 
-Implementation
+### Implementation
 
 Implement a REST interface to generate a ticket with n lines. Additionally we will need to
 
@@ -36,4 +36,3 @@ additional lines. Once the status of a ticket has been checked it should not be 
 
 amend.
 
-We would like tested, clean code to be returned.
