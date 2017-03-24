@@ -1,3 +1,6 @@
+Use 'npm test' to run unit tests
+Use 'npm start' to start the server
+
 Problem
 
 We are looking for a REST interface to a simple lottery system. The rules of the game are
