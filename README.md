@@ -5,6 +5,7 @@ By default the server runs on port 8080. This can be configured in config.js
 
 
 Use 'npm test' to run unit tests
+
 Use 'npm start' to start the server
 
 Problem
