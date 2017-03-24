@@ -32,10 +32,15 @@ exports.api.getTickets = function(req, res) {
  * Creates a new ticket
  * @param {request} req The request sent by the user
  * @param {response} res The response to the users request
+ * @param {next} next The next item in the express route
+ * @return {error} Error handler
  */
-exports.api.postTicket = function(req, res) {
+exports.api.postTicket = function(req, res, next) {
     if(isValidTicketQuantity(req)) {
         let ticket = Ticket.createTicket(req.body.quantity);
+        if (!ticket) {
+            return next(config.ERROR_TICKET_CREATION);
+        }
         res.status(201).json({ticket: ticket});
     } else {
         res.status(400).json({mesage: config.ERROR_INVALID_QUANTITY});
@@ -47,13 +52,20 @@ exports.api.postTicket = function(req, res) {
  * Returns the ticket with the specified id
  * @param {request} req The request sent by the user
  * @param {response} res The response to the users request
+ * @param {next} next The next item in the express route
  */
-exports.api.getTicket = function(req, res) {
+exports.api.getTicket = function(req, res, next) {
     if(isValidTicketId(req)) {
         let ticketId = req.params.id;
         Ticket.findOne({_id: ticketId}, {__v: 0})
               .populate(config.MODEL_TICKET_ALLLINES, config.MODEL_LINE_ENTRY)
               .exec(function(error, ticket) {
+            if (error) {
+                return next(error);
+            }
+            if (!ticket) {
+                return next(config.ERROR_INVALID_TICKET_ID);
+            }
             ticket.view();
             let ticketWithResults = ticket.toObject({virtuals: true});
             ticketWithResults.allLines.sort((a, b)=> a.result - b.result);
@@ -69,8 +81,9 @@ exports.api.getTicket = function(req, res) {
  * Updates a ticket to add a required number of lines to it
  * @param {request} req The request sent by the user
  * @param {response} res The response to the users request
+ * @param {next} next The next item in the express route
  */
-exports.api.patchTicket = function(req, res) {
+exports.api.patchTicket = function(req, res, next) {
     if(!isValidTicketId(req)) {
         res.status(404).json({mesage: config.ERROR_INVALID_TICKET_ID});
     }
@@ -82,6 +95,12 @@ exports.api.patchTicket = function(req, res) {
     let quantity = req.body.quantity;
     Ticket.findOne({_id: ticketId}, {__v: 0})
           .exec(function(error, ticket) {
+        if (error) {
+            return next(error);
+        }
+        if (!ticket) {
+            return next(config.ERROR_INVALID_TICKET_ID);
+        }
         if(ticket.open) {
             ticket.addLines(quantity);
             let ticketObject = ticket.toObject();

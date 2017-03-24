@@ -18,4 +18,5 @@ module.exports = {
     'ERROR_INVALID_QUANTITY': 'Invalid ticket quantity',
     'ERROR_INVALID_TICKET_ID': 'Invalid ticket id',
     'ERROR_TICKET_CLOSED': 'Cannot modify closed tickets',
+    'ERROR_TICKET_CREATION': 'Failed to create a ticket',
 };

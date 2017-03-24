@@ -91,31 +91,22 @@ describe('Post Tickets', function() {
 });
 
 describe('Get ticket', function() {
-    let url = 'http://localhost:8080/api/tickets';
-    request.post({
-        headers: {
-            'Content-Type': 'application/json'},
-            url: url,
-            body: '{ "quantity": 5 }',
-        },
-        function(error, response, body) {
+    it('Create a ticket and get it', function() {
+        createTicket(function(error, response, body) {
             expect(response.statusCode).to.equal(201);
             let ticket = JSON.parse(response.body);
-            url += ticket.ticket._id;
-            it('Get a specific ticket', function() {
-                request.patch({
-                    headers: {
-                        'Content-Type': 'application/json'},
-                        url: url,
-                        body: '',
-                    },
-                    function(error, response, body) {
-                        expect(response.statusCode).to.equal(200);
-                        ticket = JSON.parse(response.body);
-                    }
-                );
+            updateTicket(ticket.ticket._id, function(error, response, body) {
+                expect(response.statusCode).to.equal(200);
+                ticket = JSON.parse(response.body);
             });
         });
+    });
+    it('Get invalid ticket', function() {
+        let ticketId = '123456789012345678901234';
+        updateTicket(ticketId, function(error, response, body) {
+            expect(response.statusCode).to.equal(400);
+        });
+    });
 });
 
 describe('Update ticket', function() {
