@@ -1,3 +1,9 @@
+# Node/MongoDB application
+
+Database location and port can be specified in config.js
+By default the server runs on port 8080. This can be configured in config.js
+
+
 Use 'npm test' to run unit tests
 Use 'npm start' to start the server
 
